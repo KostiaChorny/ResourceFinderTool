@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,14 +13,18 @@ namespace ResourceFinderTool.Classes
     {
         public Regex Pattern { get; private set; }
 
-        public ResourceExtractor(Regex pattern)
+        private string dataParam;
+
+        public ResourceExtractor(Regex pattern, string dataParam = null)
         {
             Pattern = pattern;
+            this.dataParam = dataParam;
         }
 
-        public ResourceExtractor(string pattern)
+        public ResourceExtractor(string pattern, string dataParam = null)
         {
             Pattern = new Regex(pattern);
+            this.dataParam = dataParam;
         }
 
         public List<Resource> Extract(string path)
@@ -42,9 +47,21 @@ namespace ResourceFinderTool.Classes
                         FileName = path, 
                         Line = linesCounter, 
                         Position = match.Index, 
-                        String = match.Value
+                        String = dataParam == null ? match.Value : match.Groups[dataParam].Value
                     });
             }
+        }
+
+        public List<Resource> Extract(List<string> paths)
+        {
+            var result = new List<Resource>();
+
+            foreach (var path in paths)
+            {
+                result.AddRange(Extract(path));
+            }
+
+            return result;
         }
 
     }

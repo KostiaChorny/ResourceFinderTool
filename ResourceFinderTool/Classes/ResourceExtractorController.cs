@@ -48,6 +48,17 @@ namespace ResourceFinderTool.Classes
 
             OnLogMessage(string.Format("Найдено файлов: {0}", files.Count));
 
+            var extractor = new ResourceExtractor("\"(?<data>.*[а-яА-Я]+.*)\"");
+            var results = extractor.Extract(files);
+
+            OnLogMessage(string.Format("Найдено строк: {0}", results.Count));
+
+            var writer = new StreamWriter("result.txt");
+            foreach (var resource in results)
+            {
+                writer.WriteLine(resource.String);
+            }
+
             OnLogMessage("Сканирование завершено!");
         }
     }
